@@ -19,7 +19,7 @@ axiosClient.interceptors.response.use(
         if (error.response && error.response.status === 401) {
             console.log('401 occurred');
             localStorage.removeItem('ACCESS_TOKEN');
-            // window.location.reload();
+            window.location.reload();
             toast.success("Logged out");
         }
         return Promise.reject(error);

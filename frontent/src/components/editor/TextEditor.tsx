@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import Editor, {Monaco} from "@monaco-editor/react";
 
-const allowedVariables = ["receiver_name", "tracking_number"];
+const allowedVariables = ["receiver_name", "tracking_number", "client_name", "cod"];
 
 interface TextEditorProps {
     value: string;
@@ -106,7 +106,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
             <div className="mt-2 text-sm text-red-600 dark:text-red-400">
                 Note: You can use the following variables in the message body:{" "}
                 <span className="font-medium">
-    {"{{receiver_name}}, {{tracking_number}}"}
+    {"{{receiver_name}}, {{tracking_number}}, {{client_name}}, {{cod}}"}
   </span>
             </div>
 
