@@ -2,7 +2,6 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from "../store";
 import Navbar from "../components/admin/Navbar.tsx";
-import {Link} from "react-router-dom";
 import Sidebar from "../components/admin/Sidebar.tsx";
 
 const AuthLayout = () => {

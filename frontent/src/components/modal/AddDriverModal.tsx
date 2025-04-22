@@ -7,9 +7,11 @@ import {
     Button,
     InputAdornment,
     IconButton,
+    Stack,
+    Box,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-import Grid from "@mui/material/Grid"
+
 interface AddDriverModalProps {
     open: boolean;
     onClose: () => void;
@@ -45,7 +47,7 @@ export default function AddDriverModal({
         }
     }, [open]);
 
-    const handleChange = (field: string, value: string) => {
+    const handleChange = (field: keyof typeof driver, value: string) => {
         setDriver((prev) => ({ ...prev, [field]: value }));
         if (errors[field]) {
             setErrors((prev) => ({ ...prev, [field]: "" }));
@@ -62,7 +64,8 @@ export default function AddDriverModal({
         }
         if (!driver.phone.trim()) newErrors.phone = "Phone is required";
         if (!driver.password.trim()) newErrors.password = "Password is required";
-        else if (driver.password.length < 6) newErrors.password = "Password must be at least 6 characters";
+        else if (driver.password.length < 6)
+            newErrors.password = "Password must be at least 6 characters";
         return newErrors;
     };
 
@@ -79,12 +82,22 @@ export default function AddDriverModal({
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle className="text-gray-900 dark:!text-white bg-white dark:bg-gray-800">
+            <DialogTitle
+                sx={{
+                    color: "text.primary",
+                    bgcolor: "background.paper",
+                }}
+            >
                 Add New Driver
             </DialogTitle>
-            <DialogContent className="bg-white dark:bg-gray-800 text-gray-900 dark:!text-white">
-                <Grid container spacing={2} mt={1}>
-                    <Grid item xs={12} component="div">
+            <DialogContent
+                sx={{
+                    bgcolor: "background.paper",
+                    color: "text.primary",
+                }}
+            >
+                <Box mt={2}>
+                    <Stack spacing={2}>
                         <TextField
                             label="Name"
                             fullWidth
@@ -92,10 +105,7 @@ export default function AddDriverModal({
                             onChange={(e) => handleChange("name", e.target.value)}
                             error={!!errors.name}
                             helperText={errors.name}
-                            className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
                         />
-                    </Grid>
-                    <Grid item xs={12}>
                         <TextField
                             label="Email"
                             type="email"
@@ -104,10 +114,7 @@ export default function AddDriverModal({
                             onChange={(e) => handleChange("email", e.target.value)}
                             error={!!errors.email}
                             helperText={errors.email}
-                            className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
                         />
-                    </Grid>
-                    <Grid item xs={12}>
                         <TextField
                             label="Phone"
                             fullWidth
@@ -115,10 +122,7 @@ export default function AddDriverModal({
                             onChange={(e) => handleChange("phone", e.target.value)}
                             error={!!errors.phone}
                             helperText={errors.phone}
-                            className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
                         />
-                    </Grid>
-                    <Grid item xs={12}>
                         <TextField
                             label="Password"
                             type={showPassword ? "text" : "password"}
@@ -127,9 +131,7 @@ export default function AddDriverModal({
                             onChange={(e) => handleChange("password", e.target.value)}
                             error={!!errors.password}
                             helperText={errors.password}
-                            className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white focus:border-none"
                             sx={{
-                                width: 223,
                                 "& .MuiOutlinedInput-input:focus": {
                                     "--tw-ring-color": "transparent",
                                 },
@@ -140,7 +142,7 @@ export default function AddDriverModal({
                                         <IconButton
                                             onClick={() => setShowPassword(!showPassword)}
                                             edge="end"
-                                            className="text-gray-500 dark:text-gray-300"
+                                            sx={{ color: "text.secondary" }}
                                         >
                                             {showPassword ? (
                                                 <i className="fa-solid fa-eye cursor-pointer" />
@@ -152,14 +154,27 @@ export default function AddDriverModal({
                                 ),
                             }}
                         />
-                    </Grid>
-                </Grid>
+                    </Stack>
+                </Box>
             </DialogContent>
-            <DialogActions className="bg-white dark:bg-gray-800">
-                <Button onClick={onClose} color="secondary" className="text-gray-800 dark:text-gray-300">
+            <DialogActions
+                sx={{
+                    bgcolor: "background.paper",
+                }}
+            >
+                <Button onClick={onClose} color="secondary">
                     Cancel
                 </Button>
-                <Button onClick={handleSubmit} variant="contained" className="bg-blue-500 dark:bg-blue-700">
+                <Button
+                    onClick={handleSubmit}
+                    variant="contained"
+                    sx={{
+                        bgcolor: "primary.main",
+                        "&:hover": {
+                            bgcolor: "primary.dark",
+                        },
+                    }}
+                >
                     Save
                 </Button>
             </DialogActions>

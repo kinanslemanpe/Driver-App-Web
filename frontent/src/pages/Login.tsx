@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
-import {Link, useNavigate} from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import { login } from '../store/slices/authSlice';
 import { AppDispatch } from '../store';
 

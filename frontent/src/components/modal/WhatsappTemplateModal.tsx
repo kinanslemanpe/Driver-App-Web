@@ -1,12 +1,4 @@
-import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    TextField,
-    Button,
-    Grid,
-} from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import TextEditor from "../editor/TextEditor";
 
@@ -14,7 +6,11 @@ interface WhatsappTemplateModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (data: { key: string; message: string; active: boolean }) => void;
-    initialData?: { key: string; message: string; active: boolean };
+    initialData?:{
+        key: string;
+        message: string;
+        active: boolean;
+    } | null;
     isEditing?: boolean;
 }
 
@@ -48,8 +44,7 @@ export default function WhatsappTemplateModal({
         const newErrors: { [key: string]: string } = {};
         if (!key.trim()) newErrors.key = "Template key is required";
         if (!message.trim()) newErrors.message = "Message body is required";
-        if (invalidVariables.length > 0)
-            newErrors.message = "Message contains invalid variables.";
+        if (invalidVariables.length > 0) newErrors.message = "Message contains invalid variables.";
         return newErrors;
     };
 
@@ -69,8 +64,8 @@ export default function WhatsappTemplateModal({
                 {isEditing ? "Edit Template" : "Create Template"}
             </DialogTitle>
             <DialogContent className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-                <Grid container spacing={2} direction="column" sx={{ mt: 1 }}>
-                    <Grid item xs={12}>
+                <div className="flex flex-col space-y-4 mt-1">
+                    <div>
                         <TextField
                             label="Template Key"
                             fullWidth
@@ -81,9 +76,9 @@ export default function WhatsappTemplateModal({
                             disabled={isEditing}
                             className="bg-white dark:bg-gray-700"
                         />
-                    </Grid>
+                    </div>
 
-                    <Grid item xs={12}>
+                    <div>
                         <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-gray-300">
                             Message Body
                         </label>
@@ -95,21 +90,8 @@ export default function WhatsappTemplateModal({
                         {errors.message && (
                             <p className="text-red-500 text-sm mt-1">{errors.message}</p>
                         )}
-                    </Grid>
-
-                    {/*<Grid item xs={12}>*/}
-                    {/*    <FormControlLabel*/}
-                    {/*        control={*/}
-                    {/*            <Checkbox*/}
-                    {/*                checked={active}*/}
-                    {/*                onChange={(e) => setActive(e.target.checked)}*/}
-                    {/*            />*/}
-                    {/*        }*/}
-                    {/*        label="Active"*/}
-                    {/*        className="text-gray-800 dark:text-gray-300"*/}
-                    {/*    />*/}
-                    {/*</Grid>*/}
-                </Grid>
+                    </div>
+                </div>
             </DialogContent>
 
             <DialogActions className="bg-white dark:bg-gray-800">

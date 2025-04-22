@@ -16,6 +16,7 @@ import AddOrderModal from "../components/modal/AddOrderModal";
 import DeleteOrderModal from "../components/modal/DeleteOrderModal";
 import OrderCard from "../components/card/OrderCard";
 import { userIsAdmin } from "../utils/functions";
+import {Order} from "../types/order";
 
 export default function Orders() {
     const dispatch = useDispatch<AppDispatch>();
@@ -40,8 +41,8 @@ export default function Orders() {
         setModalOpen(true);
     };
 
-    const handleEditClick = (order: any) => {
-        setEditingOrderId(order?.id);
+    const handleEditClick = (order: Order) => {
+        setEditingOrderId(Number(order?.id));
         setModalOpen(true);
     };
 
@@ -61,15 +62,15 @@ export default function Orders() {
     const handleClearOrders = () => setClearModalOpen(true);
 
     const handleConfirmClear = () => {
-        dispatch(deleteAllOrders(user?.id));
+        dispatch(deleteAllOrders(Number(user?.id)));
         setClearModalOpen(false);
     };
 
-    const handleSave = (formData: any) => {
+    const handleSave = (formData: Order) => {
         if (editingOrderId) {
-            dispatch(updateOrder({ userId: user?.id, orderId: editingOrderId, driverId: formData.driver_id, ...formData }));
+            dispatch(updateOrder({ userId: user?.id, orderId: editingOrderId, driverId: Number(formData.driver_id), ...formData }));
         } else {
-            dispatch(createOrder({ userId: user?.id, driverId: formData.driver_id, ...formData }));
+            dispatch(createOrder({ userId: user?.id, driverId: Number(formData.driver_id), ...formData }));
         }
         setModalOpen(false);
         setEditingOrderId(null);

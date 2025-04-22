@@ -1,20 +1,16 @@
-import React, {useEffect, useMemo, useRef, useState} from "react";
-import Editor, {Monaco} from "@monaco-editor/react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import Editor, { OnMount, Monaco } from "@monaco-editor/react";
+import * as monacoEditor from "monaco-editor";
+import { TextEditorProps } from "../../types/whatsappTemplate";
 
 const allowedVariables = ["receiver_name", "tracking_number", "client_name", "cod"];
-
-interface TextEditorProps {
-    value: string;
-    onChange: (value: string) => void;
-    onInvalidVariablesChange?: (invalids: string[]) => void;
-}
-
 const TextEditor: React.FC<TextEditorProps> = ({
                                                    value,
                                                    onChange,
                                                    onInvalidVariablesChange,
                                                }) => {
-    const monacoRef = useRef<Monaco | null>(null);
+    const monacoInstance = useRef<Monaco | null>(null);
+    const editorInstance = useRef<monacoEditor.editor.IStandaloneCodeEditor | null>(null);
     const [invalidVariables, setInvalidVariables] = useState<string[]>([]);
 
     const themeMode = useMemo(() => {
@@ -32,26 +28,34 @@ const TextEditor: React.FC<TextEditorProps> = ({
         return invalids;
     };
 
-    const handleEditorDidMount = (editor: any, monaco: Monaco) => {
-        monacoRef.current = monaco;
+    const handleEditorDidMount: OnMount = (
+        editor: monacoEditor.editor.IStandaloneCodeEditor,
+        monaco: Monaco
+    ) => {
+        monacoInstance.current = monaco;
+        editorInstance.current = editor;
 
-        monaco.languages.register({id: "customTemplate"});
+        monaco.languages.register({ id: "customTemplate" });
 
         monaco.languages.setMonarchTokensProvider("customTemplate", {
             tokenizer: {
-                root: [[/\{\{.*?\}\}/, {token: "variable"}]],
+                root: [[/\{\{.*?\}\}/, { token: "variable" }]],
             },
         });
 
-        monaco.editor.setModelLanguage(editor.getModel(), "customTemplate");
+        const model = editor.getModel();
+        if (model) {
+            monaco.editor.setModelLanguage(model, "customTemplate");
+        }
     };
-
     useEffect(() => {
-        if (!monacoRef.current) return;
+        if (!monacoInstance.current || !editorInstance.current) return;
 
-        const model = monacoRef.current.editor.getModels()[0];
+        const model = editorInstance.current.getModel();
+        if (!model) return;
+
         const matches = [...value.matchAll(/\{\{(.*?)\}\}/g)];
-        const markers: monaco.editor.IMarkerData[] = [];
+        const markers: monacoEditor.editor.IMarkerData[] = [];
 
         for (const match of matches) {
             const variable = match[1]?.trim();
@@ -61,9 +65,8 @@ const TextEditor: React.FC<TextEditorProps> = ({
             if (!allowedVariables.includes(variable)) {
                 const startPos = model.getPositionAt(start);
                 const endPos = model.getPositionAt(end);
-
                 markers.push({
-                    severity: monacoRef.current.MarkerSeverity.Warning,
+                    severity: monacoEditor.MarkerSeverity.Warning,
                     message: `Invalid variable: ${variable}`,
                     startLineNumber: startPos.lineNumber,
                     startColumn: startPos.column,
@@ -73,7 +76,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
             }
         }
 
-        monacoRef.current.editor.setModelMarkers(model, "owner", markers);
+        monacoEditor.editor.setModelMarkers(model, "owner", markers);
         validateVariables(value);
     }, [value]);
 
@@ -88,28 +91,25 @@ const TextEditor: React.FC<TextEditorProps> = ({
                 options={{
                     fontSize: 14,
                     fontFamily: "monospace",
-                    minimap: {enabled: false},
+                    minimap: { enabled: false },
                     lineNumbers: "off",
                     wordWrap: "on",
                     scrollBeyondLastLine: false,
-                    padding: {top: 10},
+                    padding: { top: 10 },
                 }}
             />
-
             {invalidVariables.length > 0 && (
                 <div className="mt-2 text-sm text-red-600 dark:text-red-400">
                     ⚠️ The following variables are not allowed:{" "}
                     <span className="font-medium">{invalidVariables.join(", ")}</span>
                 </div>
             )}
-
             <div className="mt-2 text-sm text-red-600 dark:text-red-400">
                 Note: You can use the following variables in the message body:{" "}
                 <span className="font-medium">
-    {"{{receiver_name}}, {{tracking_number}}, {{client_name}}, {{cod}}"}
-  </span>
+          {"{{receiver_name}}, {{tracking_number}}, {{client_name}}, {{cod}}"}
+        </span>
             </div>
-
         </div>
     );
 };

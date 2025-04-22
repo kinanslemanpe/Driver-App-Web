@@ -15,7 +15,7 @@ export const fetchWhatsAppTemplates = createAsyncThunk(
     async (_, thunkAPI) => {
         try {
             const response = await axiosClient.get('/WhatsApp-template');
-            return response.data;
+            return response.data.data;
         } catch (error) {
             const err = error as AxiosError<{ message: string }>;
             return thunkAPI.rejectWithValue(err.response?.data?.message || 'Fetching templates failed');
@@ -28,7 +28,7 @@ export const createWhatsAppTemplate = createAsyncThunk(
     async (data: WhatsAppTemplate, thunkAPI) => {
         try {
             const response = await axiosClient.post('/WhatsApp-template', data);
-            return response.data;
+            return response.data.data;
         } catch (error) {
             const err = error as AxiosError<{ message: string }>;
             return thunkAPI.rejectWithValue(err.response?.data?.message || 'Creating template failed');
@@ -41,7 +41,7 @@ export const updateWhatsAppTemplate = createAsyncThunk(
     async (data: Partial<WhatsAppTemplate> & { key: string }, thunkAPI) => {
         try {
             const response = await axiosClient.put('/WhatsApp-template', data);
-            return response.data;
+            return response.data.data;
         } catch (error) {
             const err = error as AxiosError<{ message: string }>;
             return thunkAPI.rejectWithValue(err.response?.data?.message || 'Updating template failed');
@@ -62,7 +62,7 @@ const whatsappTemplateSlice = createSlice({
             })
             .addCase(fetchWhatsAppTemplates.fulfilled, (state, action: PayloadAction<WhatsAppTemplate[]>) => {
                 state.loading = false;
-                state.templates = action.payload.data;
+                state.templates = action.payload;
             })
             .addCase(fetchWhatsAppTemplates.rejected, (state, action) => {
                 state.loading = false;
@@ -77,7 +77,7 @@ const whatsappTemplateSlice = createSlice({
             })
             .addCase(createWhatsAppTemplate.fulfilled, (state, action: PayloadAction<WhatsAppTemplate>) => {
                 state.loading = false;
-                state.templates.push(action.payload.data);
+                state.templates.push(action.payload);
             })
             .addCase(createWhatsAppTemplate.rejected, (state, action) => {
                 state.loading = false;
@@ -92,9 +92,9 @@ const whatsappTemplateSlice = createSlice({
             })
             .addCase(updateWhatsAppTemplate.fulfilled, (state, action: PayloadAction<WhatsAppTemplate>) => {
                 state.loading = false;
-                const index = state.templates.findIndex(t => t.key === action.payload.data.key);
+                const index = state.templates.findIndex(t => t.key === action.payload.key);
                 if (index !== -1) {
-                    state.templates[index] = action.payload.data;
+                    state.templates[index] = action.payload;
                 }
                 successMessage("Template Updated Successfully");
             })

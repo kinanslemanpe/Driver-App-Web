@@ -3,7 +3,6 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Grid,
     TextField,
     Button,
     Autocomplete,
@@ -11,22 +10,8 @@ import {
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { Order } from "../../types/order";
-
-interface AddOrderModalProps {
-    open: boolean;
-    editingOrderId: number | null;
-    lockedDriverId?: number | null;
-    onClose: () => void;
-    onSave: (order: {
-        client_name: string;
-        receiver_name: string;
-        tracking_number: string;
-        cod: number;
-        custom_fees: number;
-        driver_id: number;
-    }) => void;
-}
+import {AddOrderModalProps, Order} from "../../types/order";
+import {UserLookup} from "../../types/user";
 
 const initialOrder: Order = {
     client_name: "",
@@ -44,7 +29,7 @@ export default function AddOrderModal({ open, onClose, onSave, editingOrderId, l
     const [order, setOrder] = useState<Order>(initialOrder);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-    const userOptions = users?.map((u: any) => ({
+    const userOptions = users?.map((u: UserLookup) => ({
         id: u.id,
         label: u.name,
     }));
@@ -72,20 +57,24 @@ export default function AddOrderModal({ open, onClose, onSave, editingOrderId, l
 
     const validate = () => {
         const newErrors: { [key: string]: string } = {};
-        if (!order?.client_name.trim()) newErrors.client_name = "Client name is required";
-        if (!order?.receiver_name.trim()) newErrors.receiver_name = "Receiver name is required";
-        if (!order?.tracking_number.trim()) newErrors.tracking_number = "Tracking number is required";
-        if (order?.cod === null || order?.cod === undefined || isNaN(order?.cod)) {
+        if (!order) {
+            newErrors.general = "Order data is missing";
+            return newErrors;
+        }
+        if (!order.client_name?.trim()) newErrors.client_name = "Client name is required";
+        if (!order.receiver_name?.trim()) newErrors.receiver_name = "Receiver name is required";
+        if (!order.tracking_number?.trim()) newErrors.tracking_number = "Tracking number is required";
+        if (order.cod === null || order.cod === undefined || isNaN(order.cod)) {
             newErrors.cod = "COD is required and must be a number";
-        } else if (order?.cod < 0) {
+        } else if (order.cod < 0) {
             newErrors.cod = "COD must be a positive number";
         }
-        if (order?.custom_fees === null || order?.custom_fees === undefined || isNaN(order?.custom_fees)) {
+        if (order.custom_fees === null || order.custom_fees === undefined || isNaN(order.custom_fees)) {
             newErrors.custom_fees = "Custom fees are required and must be a number";
-        } else if (order?.custom_fees < 0) {
+        } else if (order.custom_fees < 0) {
             newErrors.custom_fees = "Custom fees must be a positive number";
         }
-        if (!lockedDriverId && Number(order?.driver_id) === 0) {
+        if (!lockedDriverId && Number(order.driver_id) === 0) {
             newErrors.driver_id = "Driver is required";
         }
         return newErrors;
@@ -98,7 +87,6 @@ export default function AddOrderModal({ open, onClose, onSave, editingOrderId, l
             setErrors(validationErrors);
             return;
         }
-
         onSave(order);
         onClose();
     };
@@ -109,8 +97,8 @@ export default function AddOrderModal({ open, onClose, onSave, editingOrderId, l
                 {editingOrderId ? "Edit Order" : "Add New Order"}
             </DialogTitle>
             <DialogContent className="bg-white dark:bg-gray-800 text-gray-900 dark:!text-white">
-                <Grid container spacing={2} mt={1}>
-                    <Grid item xs={12}>
+                <div className="space-y-4 mt-1">
+                    <div>
                         <TextField
                             label="Client Name"
                             fullWidth
@@ -120,8 +108,8 @@ export default function AddOrderModal({ open, onClose, onSave, editingOrderId, l
                             helperText={errors.client_name}
                             className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
                         />
-                    </Grid>
-                    <Grid item xs={12}>
+                    </div>
+                    <div>
                         <TextField
                             label="Receiver Name"
                             fullWidth
@@ -131,8 +119,8 @@ export default function AddOrderModal({ open, onClose, onSave, editingOrderId, l
                             helperText={errors.receiver_name}
                             className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
                         />
-                    </Grid>
-                    <Grid item xs={12}>
+                    </div>
+                    <div>
                         <TextField
                             label="Tracking Number"
                             fullWidth
@@ -142,41 +130,43 @@ export default function AddOrderModal({ open, onClose, onSave, editingOrderId, l
                             helperText={errors.tracking_number}
                             className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
                         />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="COD"
-                            type="number"
-                            fullWidth
-                            value={order?.cod}
-                            onChange={(e) => handleChange("cod", Number(e.target.value))}
-                            error={!!errors.cod}
-                            helperText={errors.cod}
-                            className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="Custom Fees"
-                            type="number"
-                            fullWidth
-                            value={order?.custom_fees}
-                            onChange={(e) => handleChange("custom_fees", Number(e.target.value))}
-                            error={!!errors.custom_fees}
-                            helperText={errors.custom_fees}
-                            className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
-                        />
-                    </Grid>
+                    </div>
+                    <div className="flex space-x-4">
+                        <div className="flex-1">
+                            <TextField
+                                label="COD"
+                                type="number"
+                                fullWidth
+                                value={order?.cod}
+                                onChange={(e) => handleChange("cod", Number(e.target.value))}
+                                error={!!errors.cod}
+                                helperText={errors.cod}
+                                className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <TextField
+                                label="Custom Fees"
+                                type="number"
+                                fullWidth
+                                value={order?.custom_fees}
+                                onChange={(e) => handleChange("custom_fees", Number(e.target.value))}
+                                error={!!errors.custom_fees}
+                                helperText={errors.custom_fees}
+                                className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
+                            />
+                        </div>
+                    </div>
 
                     {!lockedDriverId && (
-                        <Grid item xs={6}>
+                        <div>
                             <Autocomplete
                                 options={userOptions}
                                 getOptionLabel={(option) => option.label}
-                                value={userOptions?.find(u => u.id === Number(order?.driver_id)) || null}
-                                onChange={(e, newValue) => handleChange("driver_id", newValue?.id || 0)}
+                                value={userOptions?.find((u: UserLookup) => u.id === Number(order?.driver_id)) || null}
+                                onChange={(_e, newValue) => handleChange("driver_id", newValue?.id || 0)}
                                 fullWidth
-                                sx={{ width: 223 }}
+                                sx={{ maxWidth: 552 }}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -190,9 +180,9 @@ export default function AddOrderModal({ open, onClose, onSave, editingOrderId, l
                                     />
                                 )}
                             />
-                        </Grid>
+                        </div>
                     )}
-                </Grid>
+                </div>
             </DialogContent>
             <DialogActions className="bg-white dark:bg-gray-800">
                 <Button onClick={onClose} color="secondary" className="text-gray-800 dark:text-gray-300">

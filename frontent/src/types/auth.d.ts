@@ -9,6 +9,12 @@ export interface User {
     }[];
 }
 
+interface AuthContextType {
+    user: User | null;
+    token: string | null;
+    setUser: (user: User | null) => void;
+    setToken: (token: string | null) => void;
+}
 
 interface LoginData {
     email: string;

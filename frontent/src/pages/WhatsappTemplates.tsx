@@ -22,11 +22,6 @@ const WhatsappTemplates: React.FC = () => {
         active: boolean;
     } | null>(null);
 
-    const handleCreate = () => {
-        setEditTemplate(null);
-        setModalOpen(true);
-    };
-
     const handleEdit = (template: { key: string; message: string; active: boolean }) => {
         if(!userIsAdmin(user)) {
             return;

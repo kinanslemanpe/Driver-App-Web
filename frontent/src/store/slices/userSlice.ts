@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosClient from "../../axios.ts";
 import {AxiosError} from "axios";
 import {showApiError} from "../../utils/functions.ts";
+import {UserState} from "../../types/user";
 
 export const fetchUsersLookup = createAsyncThunk(
     'users/fetchUsersLookup',

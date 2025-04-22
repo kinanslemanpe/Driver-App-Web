@@ -29,7 +29,11 @@ export default function Drivers() {
             driver.email.toLowerCase().includes(search.toLowerCase())
     );
 
-    const handleCreateDriver = (formData: any) => {
+    const handleCreateDriver = (formData: {
+        name: string;
+        email: string;
+        phone: string;
+        password: string; }) => {
         dispatch(createDriver(formData));
         setModalOpen(false);
     };

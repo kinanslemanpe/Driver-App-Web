@@ -12,3 +12,9 @@ export interface WhatsAppTemplateState {
     loading: boolean;
     error: string | null;
 }
+
+export interface TextEditorProps {
+    value: string;
+    onChange: (value: string) => void;
+    onInvalidVariablesChange?: (invalids: string[]) => void;
+}

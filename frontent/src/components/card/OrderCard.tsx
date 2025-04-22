@@ -1,14 +1,8 @@
 import { FC } from "react";
-import { Order } from "../../types/order";
+import { OrderCardProps} from "../../types/order";
 import { userIsAdmin } from "../../utils/functions.ts";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
-
-interface OrderCardProps {
-    order: Order;
-    onEdit: (order: Order) => void;
-    onDelete: (orderId: number) => void;
-}
 
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -53,7 +47,7 @@ const OrderCard: FC<OrderCardProps> = ({ order, onEdit, onDelete }) => {
                             Edit
                         </button>
                         <button
-                            onClick={() => onDelete(id)}
+                            onClick={() => onDelete(Number(id))}
                             className="text-sm text-red-600 hover:underline dark:text-red-400"
                         >
                             Delete
@@ -68,8 +62,8 @@ const OrderCard: FC<OrderCardProps> = ({ order, onEdit, onDelete }) => {
                 <p><span className="font-medium">Driver:</span> {driver_name ?? ''}</p>
                 <p><span className="font-medium">COD:</span> ${Number(cod).toFixed(2)}</p>
                 <p><span className="font-medium">Custom Fees:</span> ${Number(custom_fees).toFixed(2)}</p>
-                <p><span className="font-medium">Created:</span> {formatDate(created_at)}</p>
-                <p><span className="font-medium">Updated:</span> {formatDate(updated_at)}</p>
+                <p><span className="font-medium">Created:</span> {formatDate(String(created_at))}</p>
+                <p><span className="font-medium">Updated:</span> {formatDate(String(updated_at))}</p>
             </div>
         </div>
     );

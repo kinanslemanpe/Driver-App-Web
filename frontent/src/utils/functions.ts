@@ -1,13 +1,6 @@
 import { toast } from 'react-toastify';
 import {User} from "../types/auth";
-
-interface ErrorResponse {
-    message?: string;
-    errors?: {
-        [key: string]: string[];
-    };
-}
-
+import {ErrorResponse} from "../types/error";
 export const showApiError = (error: unknown) => {
     console.log(typeof error === "string", typeof error, error, 'error')
     if(typeof error === "string") {

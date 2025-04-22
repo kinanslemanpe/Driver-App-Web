@@ -6,8 +6,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../store";
 import AddIcon from "@mui/icons-material/Add";
 import AddOrderModal from "../modal/AddOrderModal.tsx";
-import {createOrder, updateOrder} from "../../store/slices/orderSlice.ts";
-
+import {createOrder} from "../../store/slices/orderSlice.ts";
+import {Order} from "../../types/order";
 interface DriverTableProps {
     drivers: Driver[];
 }
@@ -17,15 +17,16 @@ const DriversTable: FC<DriverTableProps> = ({ drivers }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
     const [selectedUserId, setSelectedUserId] = useState<number|null>(null)
-    const handleSave = (formData: any) => {
-        dispatch(createOrder({ userId: user?.id, driverId: formData.driver_id, ...formData }));
+    const handleSave = (formData: Order) => {
+        dispatch(createOrder({ userId: user?.id, driverId: Number(formData.driver_id), ...formData }));
         setModalOpen(false);
-        setSelectedUserId(null)
+        setSelectedUserId(null);
     };
-    const handleAddOrder = (userId) => {
+
+    const handleAddOrder = (userId: number) => {
         setModalOpen(true);
-        setSelectedUserId(userId)
-    }
+        setSelectedUserId(userId);
+    };
     return (
         <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
