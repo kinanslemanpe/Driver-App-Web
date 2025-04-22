@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function lookup(Request $request)
     {
-        $users = User::select('id', 'name', 'email')->get();
+        $users = User::role('driver')->select('id', 'name', 'email')->get();
         $data = UserLookupResource::collection($users);
         return sendResponse("Lookup Returned Successfully", 200, $data);
     }

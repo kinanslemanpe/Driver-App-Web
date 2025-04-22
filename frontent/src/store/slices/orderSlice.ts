@@ -154,11 +154,7 @@ const orderSlice = createSlice({
         });
         builder.addCase(createOrder.fulfilled, (state, action) => {
             state.loading = false;
-            const currentUserId = action.meta.arg.userId;
-            const driverId = action.meta.arg.driverId;
-            if (driverId === currentUserId) {
-                state.orders.push(action.payload);
-            }
+            state.orders.push(action.payload);
             successMessage("Order Created Successfully");
         });
         builder.addCase(createOrder.rejected, (state, action) => {
@@ -172,15 +168,9 @@ const orderSlice = createSlice({
         });
         builder.addCase(updateOrder.fulfilled, (state, action) => {
             state.loading = false;
-            const currentUserId = action.meta.arg.userId;
-            const driverId = action.meta.arg.driverId;
-            if (driverId === currentUserId) {
-                const index = state.orders.findIndex((order) => order.id === action.payload.id);
-                if (index !== -1) {
-                    state.orders[index] = action.payload;
-                }
-            } else {
-                state.orders = state.orders.filter((order) => order.id !== action.payload.id);
+            const index = state.orders.findIndex((order) => order.id === action.payload.id);
+            if (index !== -1) {
+                state.orders[index] = action.payload;
             }
             successMessage("Order Updated Successfully");
         });
@@ -207,9 +197,9 @@ const orderSlice = createSlice({
         builder.addCase(deleteAllOrders.pending, (state) => {
             state.loading = true;
         });
-        builder.addCase(deleteAllOrders.fulfilled, (state, action) => {
+        builder.addCase(deleteAllOrders.fulfilled, (state) => {
             state.loading = false;
-            state.orders = state.orders.filter((order) => Number(order.driver_id) !== action.payload);
+            state.orders = [];
             successMessage("All Orders Deleted Successfully");
         });
         builder.addCase(deleteAllOrders.rejected, (state, action) => {
@@ -221,14 +211,7 @@ const orderSlice = createSlice({
         });
         builder.addCase(createOrdersFromFile.fulfilled, (state, action) => {
             state.loading = false;
-            const currentUserId = action.payload.userId;
-            const driverId = action.payload.driverId;
-            console.log(driverId === currentUserId, 'driverId === currentUserId');
-            console.log(driverId, 'driverId');
-            console.log(currentUserId, 'currentUserId');
-            if (driverId === currentUserId) {
-                state.orders = [...state.orders, ...action.payload.data];
-            }
+            state.orders = [...state.orders, ...action.payload.data];
             successMessage("Orders Uploaded Successfully");
         });
         builder.addCase(createOrdersFromFile.rejected, (state, action) => {

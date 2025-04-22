@@ -78,6 +78,7 @@ export default function UploadOrdersModal({ open, onClose, onUpload }: UploadOrd
                         newErrors[`tracking_number_${index}`] = "Tracking number is required";
                         errorMessage(`Row ${index + 1}: Tracking number is required`);
                     }
+
                     if (!receiver_name || typeof receiver_name !== "string") {
                         newErrors[`receiver_name_${index}`] = "Receiver name is required and must be a string";
                         errorMessage(`Row ${index + 1}: Receiver name is required and must be a string`);
@@ -85,10 +86,16 @@ export default function UploadOrdersModal({ open, onClose, onUpload }: UploadOrd
                     if (cod === undefined || cod === null || isNaN(parseFloat(cod))) {
                         newErrors[`cod_${index}`] = "COD must be a valid number";
                         errorMessage(`Row ${index + 1}: COD must be a valid number`);
+                    } else if (cod < 10 || cod > 2147483647) {
+                        newErrors[`cod_${index}`] = "COD must be between 10 and 2147483647";
+                        errorMessage(`Row ${index + 1}: COD must be between 10 and 2147483647`);
                     }
                     if (custom_fees === undefined || custom_fees === null || isNaN(parseFloat(custom_fees))) {
                         newErrors[`custom_fees_${index}`] = "Custom fees must be a valid number";
                         errorMessage(`Row ${index + 1}: Custom fees must be a valid number`);
+                    } else if (custom_fees < 5 || custom_fees > 2147483647) {
+                        newErrors[`custom_fees_${index}`] = "Custom fees must be between 5 and 2147483647";
+                        errorMessage(`Row ${index + 1}: Custom fees must be between 5 and 2147483647`);
                     }
                     if (!client_name || typeof client_name !== "string") {
                         newErrors[`client_name_${index}`] = "Client name is required and must be a string";

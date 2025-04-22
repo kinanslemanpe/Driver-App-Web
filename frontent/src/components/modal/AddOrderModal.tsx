@@ -57,24 +57,34 @@ export default function AddOrderModal({ open, onClose, onSave, editingOrderId, l
 
     const validate = () => {
         const newErrors: { [key: string]: string } = {};
+
+        // التحقق إذا كانت بيانات الطلب مفقودة
         if (!order) {
             newErrors.general = "Order data is missing";
             return newErrors;
         }
-        if (!order.client_name?.trim()) newErrors.client_name = "Client name is required";
-        if (!order.receiver_name?.trim()) newErrors.receiver_name = "Receiver name is required";
-        if (!order.tracking_number?.trim()) newErrors.tracking_number = "Tracking number is required";
-        if (order.cod === null || order.cod === undefined || isNaN(order.cod)) {
+
+        // التحقق من الحقول المطلوبة
+        if (!order?.client_name?.trim()) newErrors.client_name = "Client name is required";
+        if (!order?.receiver_name?.trim()) newErrors.receiver_name = "Receiver name is required";
+        if (!order?.tracking_number?.trim()) newErrors.tracking_number = "Tracking number is required";
+
+        // التحقق من قيمة COD
+        if (order?.cod === null || order?.cod === undefined || isNaN(order?.cod)) {
             newErrors.cod = "COD is required and must be a number";
-        } else if (order.cod < 0) {
+        } else if (order?.cod < 0) {
             newErrors.cod = "COD must be a positive number";
+        } else if (order?.cod < 10 || order?.cod > 2147483647) {
+            newErrors.cod = "COD must be between 10 and 2147483647";
         }
-        if (order.custom_fees === null || order.custom_fees === undefined || isNaN(order.custom_fees)) {
+        if (order?.custom_fees === null || order?.custom_fees === undefined || isNaN(order?.custom_fees)) {
             newErrors.custom_fees = "Custom fees are required and must be a number";
-        } else if (order.custom_fees < 0) {
+        } else if (order?.custom_fees < 0) {
             newErrors.custom_fees = "Custom fees must be a positive number";
+        } else if (order?.custom_fees < 5 || order?.custom_fees > 2147483647) {
+            newErrors.custom_fees = "Custom fees must be between 5 and 2147483647";
         }
-        if (!lockedDriverId && Number(order.driver_id) === 0) {
+        if (!lockedDriverId && Number(order?.driver_id) === 0) {
             newErrors.driver_id = "Driver is required";
         }
         return newErrors;

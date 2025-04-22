@@ -10,11 +10,17 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function index($driverId)
+    public function index(Request $request, $driverId)
     {
-        $orders = Order::where('driver_id', $driverId)->get();
+        $user = auth()->user();
+        if ($user->hasRole('admin')) {
+            $orders = Order::all();
+        } else {
+            $orders = Order::where('driver_id', $driverId)->get();
+        }
         return sendResponse("Orders Returned Successfully", 200, OrderResource::collection($orders));
     }
+
 
     public function store(OrderRequest $request, $driverId)
     {
@@ -47,12 +53,8 @@ class OrderController extends Controller
 
     public function destroy($driverId)
     {
-        $orders = Order::where('driver_id', $driverId)->get();
-        if ($orders->isEmpty()) {
-            return sendResponse("No orders found for this driver", 404);
-        }
-        Order::where('driver_id', $driverId)->delete();
-        return sendResponse("All orders deleted", 200, OrderResource::collection($orders));
+        Order::truncate();
+        return sendResponse("All orders deleted", 200);
     }
 
     public function delete($driverId, $orderId)
