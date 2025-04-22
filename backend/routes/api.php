@@ -27,6 +27,7 @@ Route::middleware(['auth:sanctum', 'authorize:admin|driver'])->group(function() 
     Route::post('/drivers/{driverId}/orders', [OrderController::class, 'store']);
     Route::put('/drivers/{driverId}/orders/{orderId}', [OrderController::class, 'update']);
     Route::get('/drivers/{driverId}/orders', [OrderController::class, 'index']);
+    Route::post('/drivers/{driverId}/upload-orders', [OrderController::class, 'uploadOrders']);
 });
 Route::middleware(['auth:sanctum', 'authorize:admin'])->group(function () {
     Route::delete('/drivers/{driverId}/orders/{orderId}', [OrderController::class, 'delete']);

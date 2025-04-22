@@ -59,7 +59,7 @@ const OrderCard: FC<OrderCardProps> = ({ order, onEdit, onDelete }) => {
             <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                 <p><span className="font-medium">Client:</span> {client_name}</p>
                 <p><span className="font-medium">Receiver:</span> {receiver_name}</p>
-                <p><span className="font-medium">Driver:</span> {driver_name ?? ''}</p>
+                {driver_name && <p><span className="font-medium">Driver:</span> {driver_name ?? ''}</p>}
                 <p><span className="font-medium">COD:</span> ${Number(cod).toFixed(2)}</p>
                 <p><span className="font-medium">Custom Fees:</span> ${Number(custom_fees).toFixed(2)}</p>
                 <p><span className="font-medium">Created:</span> {formatDate(String(created_at))}</p>

@@ -5,7 +5,7 @@ import {
     createOrder,
     updateOrder,
     deleteOrder,
-    deleteAllOrders,
+    deleteAllOrders, createOrdersFromFile,
 } from "../store/slices/orderSlice";
 import { fetchUsersLookup } from "../store/slices/userSlice";
 import { RootState, AppDispatch } from "../store";
@@ -17,18 +17,19 @@ import DeleteOrderModal from "../components/modal/DeleteOrderModal";
 import OrderCard from "../components/card/OrderCard";
 import { userIsAdmin } from "../utils/functions";
 import {Order} from "../types/order";
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
+import UploadOrderModal from "../components/modal/UploadOrderModal.tsx";
 
 export default function Orders() {
     const dispatch = useDispatch<AppDispatch>();
     const { orders, loading, error } = useSelector((state: RootState) => state.order);
     const { user } = useSelector((state: RootState) => state.auth);
-
     const [modalOpen, setModalOpen] = useState(false);
     const [editingOrderId, setEditingOrderId] = useState<number | null>(null);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [orderToDelete, setOrderToDelete] = useState<number | null>(null);
     const [clearModalOpen, setClearModalOpen] = useState(false);
-
+    const [uploadModalOpen, setUploadModalOpen] = useState(false);
     useEffect(() => {
         dispatch(fetchOrders(Number(user?.id)));
         if (userIsAdmin(user)) {
@@ -60,6 +61,23 @@ export default function Orders() {
     };
 
     const handleClearOrders = () => setClearModalOpen(true);
+    const handleUploadOrders = () => setUploadModalOpen(true);
+    const handleUploadOrdersFile = (ordersFromFile: Order[], driverId: number) => {
+        if (!ordersFromFile.length || !driverId) {
+            return;
+        }
+        const formattedOrders = ordersFromFile.map((order) => ({
+            tracking_number: order.tracking_number,
+            receiver_name: order.receiver_name,
+            cod: order.cod ?? undefined,
+            custom_fees: order.custom_fees ?? undefined,
+            client_name: order.client_name ?? undefined,
+            driverId: driverId,
+        }));
+        dispatch(createOrdersFromFile({formattedOrders, userId: Number(user?.id)}));
+        setUploadModalOpen(false);
+    };
+
 
     const handleConfirmClear = () => {
         dispatch(deleteAllOrders(Number(user?.id)));
@@ -86,15 +104,23 @@ export default function Orders() {
                             className="flex items-center justify-center px-4 py-2 text-sm font-medium border border-red-500 text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 dark:text-red-400"
                             onClick={handleClearOrders}
                         >
-                            <ClearAllIcon fontSize="small" className="mr-1" /> Clear Orders
+                            <ClearAllIcon fontSize="small" className="mr-1"/> Clear Orders
                         </button>
                         <button
-                            className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                            className="flex items-center justify-center px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                            onClick={handleUploadOrders}
+                        >
+                            <FileUploadOutlinedIcon />
+                            Upload Orders
+                        </button>
+                        <button
+                            className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
                             onClick={handleAddClick}
                         >
-                            <AddIcon fontSize="small" className="mr-1" /> Add Order
+                            <AddIcon fontSize="small" className="mr-1"/> Add Order
                         </button>
                     </div>
+
                 )}
             </div>
 
@@ -105,19 +131,22 @@ export default function Orders() {
             )}
 
             {orders.length === 0 && !loading && (
-                <div className="w-full flex flex-col justify-center items-center bg-gray-100 p-8 rounded-lg shadow-md dark:bg-gray-800">
+                <div
+                    className="w-full flex flex-col justify-center items-center bg-gray-100 p-8 rounded-lg shadow-md dark:bg-gray-800">
                     <h2 className="text-lg text-gray-700 dark:text-gray-200 font-semibold">No Orders Found</h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">It seems like there are no orders at the moment.</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">It seems like there are no orders at the
+                        moment.</p>
                 </div>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {loading
-                    ? Array.from({ length: 4 }).map((_, index) => (
-                        <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                            <Skeleton variant="rectangular" height={150} className="mb-4" />
-                            <Skeleton variant="text" width="60%" />
-                            <Skeleton variant="text" width="80%" />
+                    ? Array.from({length: 4}).map((_, index) => (
+                        <div key={index}
+                             className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                            <Skeleton variant="rectangular" height={150} className="mb-4"/>
+                            <Skeleton variant="text" width="60%"/>
+                            <Skeleton variant="text" width="80%"/>
                             <Skeleton variant="text" width="40%" />
                         </div>
                     ))
@@ -130,6 +159,12 @@ export default function Orders() {
                         />
                     ))}
             </div>
+
+            <UploadOrderModal
+                open={uploadModalOpen}
+                onClose={() => setUploadModalOpen(false)}
+                onUpload={handleUploadOrdersFile}
+            />
 
             <AddOrderModal
                 open={modalOpen}

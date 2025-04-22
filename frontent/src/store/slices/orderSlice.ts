@@ -89,6 +89,35 @@ export const deleteAllOrders = createAsyncThunk(
     }
 );
 
+type CreateOrdersPayload = {
+    formattedOrders: OrderData[];
+    userId: number;
+};
+
+export const createOrdersFromFile = createAsyncThunk(
+    'orders/createOrdersFromFile',
+    async ({ formattedOrders, userId }: CreateOrdersPayload, { rejectWithValue }) => {
+        try {
+            const response = await axiosClient.post(
+                `/drivers/${formattedOrders[0].driverId}/upload-orders`,
+                { orders: formattedOrders }
+            );
+            return {
+                data: response.data.data,
+                driverId: formattedOrders[0].driverId,
+                userId,
+            };
+        } catch (error: unknown) {
+            if (error instanceof AxiosError) {
+                showApiError(error);
+                return rejectWithValue(error.response?.data.message || 'Failed to upload orders from file');
+            }
+            return rejectWithValue('Unexpected error occurred');
+        }
+    }
+);
+
+
 interface OrderState {
     orders: Order[];
     loading: boolean;
@@ -184,6 +213,25 @@ const orderSlice = createSlice({
             successMessage("All Orders Deleted Successfully");
         });
         builder.addCase(deleteAllOrders.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
+        builder.addCase(createOrdersFromFile.pending, (state) => {
+            state.loading = true;
+        });
+        builder.addCase(createOrdersFromFile.fulfilled, (state, action) => {
+            state.loading = false;
+            const currentUserId = action.payload.userId;
+            const driverId = action.payload.driverId;
+            console.log(driverId === currentUserId, 'driverId === currentUserId');
+            console.log(driverId, 'driverId');
+            console.log(currentUserId, 'currentUserId');
+            if (driverId === currentUserId) {
+                state.orders = [...state.orders, ...action.payload.data];
+            }
+            successMessage("Orders Uploaded Successfully");
+        });
+        builder.addCase(createOrdersFromFile.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
         });

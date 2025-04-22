@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Models\User;
+use App\Models\User;;
+
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -62,5 +64,34 @@ class OrderController extends Controller
         $order->delete();
         return sendResponse("Order Deleted Successfully", 200, new OrderResource($order));
     }
+    public function uploadOrders(Request $request, $driverId)
+    {
+        $driver = User::find($driverId);
+        if (!$driver) {
+            return sendResponse("Driver not found", 404);
+        }
+        $orders = $request->input('orders');
+        if (empty($orders)) {
+            return sendResponse("No orders provided", 400);
+        }
+        $createdOrders = [];
+        foreach ($orders as $orderData) {
+            $createdOrder = Order::create([
+                'driver_id'       => $driverId,
+                'tracking_number' => $orderData['tracking_number'],
+                'receiver_name'   => $orderData['receiver_name'],
+                'cod'             => $orderData['cod'] ?? null,
+                'custom_fees'     => $orderData['custom_fees'] ?? null,
+                'client_name'     => $orderData['client_name'] ?? null,
+            ]);
+            $createdOrders[] = $createdOrder;
+        }
+        return sendResponse(
+            "Orders Uploaded and Assigned Successfully",
+            200,
+            OrderResource::collection($createdOrders)
+        );
+    }
+
 }
 

@@ -7,10 +7,9 @@ import {
     Button,
     InputAdornment,
     IconButton,
-    Stack,
-    Box,
 } from "@mui/material";
 import { useState, useEffect } from "react";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 interface AddDriverModalProps {
     open: boolean;
@@ -30,11 +29,7 @@ const initialDriver = {
     password: "",
 };
 
-export default function AddDriverModal({
-                                           open,
-                                           onClose,
-                                           onSave,
-                                       }: AddDriverModalProps) {
+export default function AddDriverModal({ open, onClose, onSave }: AddDriverModalProps) {
     const [driver, setDriver] = useState(initialDriver);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [showPassword, setShowPassword] = useState(false);
@@ -82,99 +77,69 @@ export default function AddDriverModal({
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle
-                sx={{
-                    color: "text.primary",
-                    bgcolor: "background.paper",
-                }}
-            >
+            <DialogTitle className="text-gray-900 dark:!text-white bg-white dark:bg-gray-800">
                 Add New Driver
             </DialogTitle>
-            <DialogContent
-                sx={{
-                    bgcolor: "background.paper",
-                    color: "text.primary",
-                }}
-            >
-                <Box mt={2}>
-                    <Stack spacing={2}>
-                        <TextField
-                            label="Name"
-                            fullWidth
-                            value={driver.name}
-                            onChange={(e) => handleChange("name", e.target.value)}
-                            error={!!errors.name}
-                            helperText={errors.name}
-                        />
-                        <TextField
-                            label="Email"
-                            type="email"
-                            fullWidth
-                            value={driver.email}
-                            onChange={(e) => handleChange("email", e.target.value)}
-                            error={!!errors.email}
-                            helperText={errors.email}
-                        />
-                        <TextField
-                            label="Phone"
-                            fullWidth
-                            value={driver.phone}
-                            onChange={(e) => handleChange("phone", e.target.value)}
-                            error={!!errors.phone}
-                            helperText={errors.phone}
-                        />
-                        <TextField
-                            label="Password"
-                            type={showPassword ? "text" : "password"}
-                            fullWidth
-                            value={driver.password}
-                            onChange={(e) => handleChange("password", e.target.value)}
-                            error={!!errors.password}
-                            helperText={errors.password}
-                            sx={{
-                                "& .MuiOutlinedInput-input:focus": {
-                                    "--tw-ring-color": "transparent",
-                                },
-                            }}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            edge="end"
-                                            sx={{ color: "text.secondary" }}
-                                        >
-                                            {showPassword ? (
-                                                <i className="fa-solid fa-eye cursor-pointer" />
-                                            ) : (
-                                                <i className="fa-solid fa-eye-slash cursor-pointer" />
-                                            )}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    </Stack>
-                </Box>
+            <DialogContent className="bg-white dark:bg-gray-800 text-gray-900 dark:!text-white">
+                <div className="flex flex-col gap-4 mt-1">
+                    <TextField
+                        label="Name"
+                        fullWidth
+                        value={driver.name}
+                        onChange={(e) => handleChange("name", e.target.value)}
+                        error={!!errors.name}
+                        helperText={errors.name}
+                        className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
+                    />
+                    <TextField
+                        label="Email"
+                        type="email"
+                        fullWidth
+                        value={driver.email}
+                        onChange={(e) => handleChange("email", e.target.value)}
+                        error={!!errors.email}
+                        helperText={errors.email}
+                        className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
+                    />
+                    <TextField
+                        label="Phone"
+                        fullWidth
+                        value={driver.phone}
+                        onChange={(e) => handleChange("phone", e.target.value)}
+                        error={!!errors.phone}
+                        helperText={errors.phone}
+                        className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
+                    />
+                    <TextField
+                        label="Password"
+                        type={showPassword ? "text" : "password"}
+                        fullWidth
+                        value={driver.password}
+                        onChange={(e) => handleChange("password", e.target.value)}
+                        error={!!errors.password}
+                        helperText={errors.password}
+                        className="bg-white dark:bg-gray-700 text-gray-900 dark:!text-white"
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        edge="end"
+                                        className="text-gray-600 dark:text-gray-300"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                </div>
             </DialogContent>
-            <DialogActions
-                sx={{
-                    bgcolor: "background.paper",
-                }}
-            >
-                <Button onClick={onClose} color="secondary">
+            <DialogActions className="bg-white dark:bg-gray-800">
+                <Button onClick={onClose} color="secondary" className="text-gray-800 dark:text-gray-300">
                     Cancel
                 </Button>
-                <Button
-                    onClick={handleSubmit}
-                    variant="contained"
-                    sx={{
-                        bgcolor: "primary.main",
-                        "&:hover": {
-                            bgcolor: "primary.dark",
-                        },
-                    }}
-                >
+                <Button onClick={handleSubmit} variant="contained" className="bg-blue-500 dark:bg-blue-700">
                     Save
                 </Button>
             </DialogActions>
