@@ -3,7 +3,8 @@ import { OrderCardProps} from "../../types/order";
 import { userIsAdmin } from "../../utils/functions.ts";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
-
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-GB", {
@@ -39,18 +40,18 @@ const OrderCard: FC<OrderCardProps> = ({ order, onEdit, onDelete }) => {
                     <p className="text-sm text-gray-500 dark:text-gray-400">Tracking: {tracking_number}</p>
                 </div>
                 {userIsAdmin(user) && (
-                    <div className="space-x-2">
+                    <div className="flex flex-col justify-end">
                         <button
                             onClick={() => onEdit(order)}
                             className="text-sm text-blue-600 hover:underline dark:text-blue-400"
                         >
-                            Edit
+                            <EditIcon />
                         </button>
                         <button
                             onClick={() => onDelete(Number(id))}
                             className="text-sm text-red-600 hover:underline dark:text-red-400"
                         >
-                            Delete
+                            <DeleteIcon />
                         </button>
                     </div>
                 )}
